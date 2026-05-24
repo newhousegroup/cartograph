@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Newhouse Cartograph</title>
+
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&family=SUSE:wght@400;500;700;800&display=swap" />
+
+<style>
+*,*::before,*::after{
+  box-sizing:border-box;
+}
+
+:root{
+  --bg:#0b0f1a;
+  --line:rgba(255,255,255,.6);
+
+  --panel:#141a2b;
+  --text:#ffffff;
+
+  --pill:#141a2b;
+  --pillText:#ffffff;
+  --pillBorder:rgba(255,255,255,.18);
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'SUSE',system-ui,sans-serif;
+  overflow:hidden;
+}
+
+header{
+  background:#0468fe;
+  padding:14px 18px;
+  font-weight:800;
+  font-size:18px;
+}
+
+/* =========================
+   QUICK SETUP BAR
+========================= */
+
+#topActions{
+  max-width:1100px;
+  margin:14px auto 0 auto;
+  padding:0 16px;
+
+  display:flex;
+  justify-content:flex-end;
+}
+
+.quickSetupBtn{
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  background:#FFD84D;
+  color:#111;
+
+  border:none;
+  border-radius:12px;
+
+  padding:10px 14px;
+
+  font-weight:800;
+  cursor:pointer;
+
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.18);
+}
+
+.quickSetupBtn .material-symbols-rounded{
+  font-size:20px;
+}
+
+.quickSetupBtn:hover{
+  filter:brightness(1.03);
+}
+
+/* =========================
+   QUICK SETUP MODAL
+========================= */
+
+#quickSetupModal{
+  position:fixed;
+  inset:0;
+
+  background:rgba(0,0,0,.55);
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  z-index:1000;
+}
+
+.modalCard{
+  width:min(92vw,700px);
+
+  background:#141a2b;
+
+  border:1px solid rgba(255,255,255,.15);
+
+  border-radius:18px;
+
+  padding:18px;
+}
+
+.modalTitle{
+  font-size:20px;
+  font-weight:800;
+  margin-bottom:10px;
+}
+
+.modalSubtitle{
+  opacity:.7;
+  font-size:14px;
+  line-height:1.5;
+  margin-bottom:14px;
+}
+
+#quickSetupInput{
+  width:100%;
+  min-height:320px;
+
+  resize:vertical;
+
+  border:none;
+  outline:none;
+
+  border-radius:14px;
+
+  padding:14px;
+
+  background:#0b0f1a;
+  color:white;
+
+  font-size:14px;
+  font-family:monospace;
+
+  border:1px solid rgba(255,255,255,.15);
+}
+
+#quickSetupInput::placeholder{
+  color:rgba(255,255,255,.35);
+}
+
+.modalButtons{
+  margin-top:14px;
+
+  display:flex;
+  gap:10px;
+}
+
+.modalBtn{
+  flex:1;
+
+  border:none;
+  border-radius:12px;
+
+  padding:12px;
+
+  font-weight:800;
+  cursor:pointer;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.modalBtnPrimary{
+  background:#FFD84D;
+  color:#111;
+}
+
+.modalBtnSecondary{
+  background:#232b45;
+  color:white;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+#editor,#mapView{
+  max-width:1100px;
+  margin:auto;
+  padding:16px;
+}
+
+#editor{
+  min-height:calc(100vh - 58px);
+  display:flex;
+  flex-direction:column;
+}
+
+#tree{
+  flex:1;
+  overflow:auto;
+  padding-bottom:24px;
+}
+
+.node{
+  margin-left:20px;
+  margin-top:10px;
+}
+
+.node.collapsed>.children{
+  display:none;
+}
+
+.nodeBox{
+  width:100%;
+  background:var(--panel);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:14px;
+  padding:12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.nodeBox input{
+  flex:1;
+  background:transparent;
+  border:none;
+  outline:none;
+  color:white;
+  font-size:16px;
+  font-family:'SUSE',system-ui,sans-serif;
+}
+
+.nodeActions{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.iconBtn{
+  width:34px;
+  height:34px;
+
+  border:none;
+  border-radius:8px;
+
+  background:#FFD84D;
+  color:#111;
+
+  cursor:pointer;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.bottomButtons{
+  display:flex;
+  gap:12px;
+  margin-top:14px;
+}
+
+.bigBtn{
+  flex:1;
+
+  border:none;
+  border-radius:14px;
+
+  background:#FFD84D;
+  color:#111;
+
+  font-weight:800;
+
+  padding:14px;
+
+  cursor:pointer;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+
+  font-family:'SUSE',system-ui,sans-serif;
+}
+
+@media(max-width:700px){
+
+  #topActions{
+    padding:0 16px;
+  }
+
+  .quickSetupBtn{
+    width:100%;
+    justify-content:center;
+  }
+
+  .bottomButtons{
+    flex-direction:column;
+  }
+
+  .modalButtons{
+    flex-direction:column;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>🗺️ Newhouse Cartograph</header>
+
+<!-- QUICK SETUP BUTTON -->
+<div id="topActions">
+  <button class="quickSetupBtn" onclick="openQuickSetup()">
+    <span class="material-symbols-rounded">auto_awesome</span>
+    Quick Setup
+  </button>
+</div>
+
+<!-- QUICK SETUP MODAL -->
+<div id="quickSetupModal">
+
+  <div class="modalCard">
+
+    <div class="modalTitle">
+      Quick Setup
+    </div>
+
+    <div class="modalSubtitle">
+      Paste your numbered structure below.<br><br>
+
+      Example format:<br>
+      0. Topic<br>
+      1. Math<br>
+      1.1. Algebra<br>
+      1.2. Geometry<br>
+      2. Science
+    </div>
+
+    <textarea
+      id="quickSetupInput"
+      placeholder="0. Topic
+1. Subtopic
+1.1. Child
+1.2. Another Child
+1.2.1. Nested Item
+2. Another Topic"
+    ></textarea>
+
+    <div class="modalButtons">
+
+      <button
+        class="modalBtn modalBtnSecondary"
+        onclick="closeQuickSetup()"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="modalBtn modalBtnPrimary"
+        onclick="importQuickSetup()"
+      >
+        <span class="material-symbols-rounded">download</span>
+        Import
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div id="editor">
+
+  <div id="tree"></div>
+
+  <div class="bottomButtons">
+
+    <button class="bigBtn">
+      <span class="material-symbols-rounded">graph_4</span>
+      Top Down
+    </button>
+
+    <button class="bigBtn">
+      <span class="material-symbols-rounded">graph_5</span>
+      Orbital
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+/* =========================
+   STATE
+========================= */
+
+let treeData={
+  id:1,
+  text:'Topic',
+  children:[]
+};
+
+/* =========================
+   TREE HELPERS
+========================= */
+
+function createNode(text='New node'){
+  return {
+    id:Date.now()+Math.random(),
+    text,
+    children:[]
+  };
+}
+
+function findNode(node,id){
+
+  if(node.id===id){
+    return node;
+  }
+
+  for(const child of node.children){
+
+    const found=findNode(child,id);
+
+    if(found){
+      return found;
+    }
+  }
+
+  return null;
+}
+
+function addChild(id){
+
+  const node=findNode(treeData,id);
+
+  if(!node) return;
+
+  node.children.push(
+    createNode()
+  );
+
+  renderTree();
+}
+
+function deleteNode(id,parent=treeData){
+
+  parent.children=
+    parent.children.filter(
+      c=>c.id!==id
+    );
+
+  parent.children.forEach(c=>{
+    deleteNode(id,c);
+  });
+}
+
+/* =========================
+   TREE RENDER
+========================= */
+
+function renderTree(){
+
+  const tree=
+    document.getElementById('tree');
+
+  tree.innerHTML='';
+
+  tree.appendChild(
+    renderNode(treeData,true)
+  );
+}
+
+function renderNode(node,isRoot=false){
+
+  const div=document.createElement('div');
+  div.className='node';
+
+  const box=document.createElement('div');
+  box.className='nodeBox';
+
+  const input=document.createElement('input');
+
+  input.value=node.text;
+
+  input.oninput=e=>{
+    node.text=e.target.value;
+  };
+
+  const actions=document.createElement('div');
+  actions.className='nodeActions';
+
+  const add=document.createElement('button');
+
+  add.className='iconBtn';
+
+  add.innerHTML=
+    '<span class="material-symbols-rounded">add</span>';
+
+  add.onclick=()=>{
+    addChild(node.id);
+  };
+
+  actions.appendChild(add);
+
+  if(!isRoot){
+
+    const del=document.createElement('button');
+
+    del.className='iconBtn';
+
+    del.innerHTML=
+      '<span class="material-symbols-rounded">delete</span>';
+
+    del.onclick=()=>{
+      deleteNode(node.id);
+      renderTree();
+    };
+
+    actions.appendChild(del);
+  }
+
+  box.appendChild(input);
+  box.appendChild(actions);
+
+  div.appendChild(box);
+
+  const children=document.createElement('div');
+  children.className='children';
+
+  node.children.forEach(child=>{
+
+    children.appendChild(
+      renderNode(child,false)
+    );
+  });
+
+  div.appendChild(children);
+
+  return div;
+}
+
+/* =========================
+   QUICK SETUP MODAL
+========================= */
+
+function openQuickSetup(){
+
+  document.getElementById(
+    'quickSetupModal'
+  ).style.display='flex';
+}
+
+function closeQuickSetup(){
+
+  document.getElementById(
+    'quickSetupModal'
+  ).style.display='none';
+}
+
+/* =========================
+   QUICK SETUP IMPORT
+========================= */
+
+function importQuickSetup(){
+
+  const raw=
+    document.getElementById(
+      'quickSetupInput'
+    ).value;
+
+  const lines=
+    raw
+      .split('\n')
+      .map(l=>l.trim())
+      .filter(Boolean);
+
+  if(lines.length===0){
+    alert('No content found.');
+    return;
+  }
+
+  const map={};
+
+  let root=null;
+
+  try{
+
+    for(const line of lines){
+
+      const match=
+        line.match(/^([\d\.]+)\s+(.*)$/);
+
+      if(!match){
+        continue;
+      }
+
+      const numbering=
+        match[1]
+          .replace(/\.$/,'');
+
+      const text=
+        match[2].trim();
+
+      const parts=
+        numbering
+          .split('.')
+          .filter(Boolean);
+
+      const node={
+        id:Date.now()+Math.random(),
+        text,
+        children:[]
+      };
+
+      map[numbering]=node;
+
+      /* ROOT */
+
+      if(numbering==='0'){
+
+        root=node;
+
+        continue;
+      }
+
+      /* PARENT */
+
+      const parentKey=
+        parts.length===1
+          ? '0'
+          : parts.slice(0,-1).join('.');
+
+      const parent=
+        map[parentKey];
+
+      if(parent){
+
+        parent.children.push(node);
+      }
+    }
+
+    if(!root){
+      alert('Missing root topic (0. Topic)');
+      return;
+    }
+
+    treeData=root;
+
+    renderTree();
+
+    closeQuickSetup();
+
+  }catch(err){
+
+    console.error(err);
+
+    alert('Import failed.');
+  }
+}
+
+/* =========================
+   INIT
+========================= */
+
+renderTree();
+</script>
+
+</body>
+</html>
