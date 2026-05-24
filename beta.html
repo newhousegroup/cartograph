@@ -28,15 +28,20 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&family=S
 
 html,
 body{
-  height:100svh;
+  height:100%;
+  min-height:100svh;
 }
 
 body{
   margin:0;
+  min-height:100svh;
   background:var(--bg);
   color:var(--text);
   font-family:'SUSE',system-ui,sans-serif;
   overflow:hidden;
+
+  display:flex;
+  flex-direction:column;
 }
 
 button,
