@@ -28,7 +28,7 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&family=S
 
 html,
 body{
-  min-height:100svh;
+  height:100svh;
 }
 
 body{
@@ -92,7 +92,7 @@ header{
   position:fixed;
   inset:0;
 
-  min-height:100svh;
+  min-height:75svh;
 
   background:rgba(0,0,0,.55);
 
@@ -324,9 +324,15 @@ header{
 
 #toolbar>.toolbarBtn,
 #toolbar .menuWrap>.toolbarBtn{
-  width:220px;
+  width:auto;
+  min-width:150px;
   min-height:48px;
   justify-content:center;
+  padding:10px 18px;
+}
+
+#toolbar>.toolbarBtn:first-child{
+  min-width:120px;
 }
 
 #canvas{
@@ -415,9 +421,7 @@ svg{
 }
 
 #debug{
-  margin-top:10px;
-  font-size:12px;
-  opacity:.75;
+  display:none;
 }
 
 @media(max-width:700px){
