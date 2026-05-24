@@ -26,6 +26,11 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&family=S
   --pillBorder:rgba(255,255,255,.18);
 }
 
+html,
+body{
+  min-height:100svh;
+}
+
 body{
   margin:0;
   background:var(--bg);
@@ -86,6 +91,8 @@ header{
 #quickSetupModal{
   position:fixed;
   inset:0;
+
+  min-height:100svh;
 
   background:rgba(0,0,0,.55);
 
@@ -195,7 +202,7 @@ header{
 }
 
 #editor{
-  min-height:calc(100vh - 58px);
+  min-height:calc(100svh - 58px);
   display:flex;
   flex-direction:column;
 }
@@ -315,6 +322,13 @@ header{
   gap:6px;
 }
 
+#toolbar>.toolbarBtn,
+#toolbar .menuWrap>.toolbarBtn{
+  width:220px;
+  min-height:48px;
+  justify-content:center;
+}
+
 #canvas{
   position:relative;
   background:var(--canvasBg);
@@ -417,6 +431,15 @@ svg{
   }
 
   .quickSetupBtn{
+    width:100%;
+  }
+
+  #toolbar>.toolbarBtn,
+  #toolbar .menuWrap>.toolbarBtn{
+    width:100%;
+  }
+
+  .menuWrap{
     width:100%;
   }
 
@@ -1503,20 +1526,111 @@ function touchMove(e){
   updateDrag(t.clientX,t.clientY);
 }
 
+function getDragGroup(rootPos){
+
+  return [
+    rootPos,
+    ...positions.filter(p=>isDescendant(p,rootPos))
+  ];
+}
+
+function clampDeltaAxis(delta,minPos,maxPos,minAllowed,maxAllowed){
+
+  const lower=
+    minAllowed-minPos;
+
+  const upper=
+    maxAllowed-maxPos;
+
+  if(lower>upper){
+    return 0;
+  }
+
+  return Math.max(
+    lower,
+    Math.min(upper,delta)
+  );
+}
+
+function clampDragDelta(group,dx,dy){
+
+  const {w,h}=getCanvasSize();
+
+  const minX=
+    Math.min(...group.map(p=>p.x));
+
+  const maxX=
+    Math.max(...group.map(p=>p.x));
+
+  const minY=
+    Math.min(...group.map(p=>p.y));
+
+  const maxY=
+    Math.max(...group.map(p=>p.y));
+
+  dx=clampDeltaAxis(
+    dx,
+    minX,
+    maxX,
+    MARGIN,
+    w-PILL_W-MARGIN
+  );
+
+  dy=clampDeltaAxis(
+    dy,
+    minY,
+    maxY,
+    MARGIN,
+    h-PILL_H-MARGIN
+  );
+
+  return {dx,dy};
+}
+
 function updateDrag(clientX,clientY){
 
   const pos=dragNode.pos;
 
-  const next=clamp(
-    clientX-dragOffsetX,
-    clientY-dragOffsetY
-  );
+  const targetX=
+    clientX-dragOffsetX;
 
-  pos.x=next.x;
-  pos.y=next.y;
+  const targetY=
+    clientY-dragOffsetY;
 
-  dragNode.el.style.left=pos.x+'px';
-  dragNode.el.style.top=pos.y+'px';
+  let dx=
+    targetX-pos.x;
+
+  let dy=
+    targetY-pos.y;
+
+  const group=
+    getDragGroup(pos);
+
+  const delta=
+    clampDragDelta(group,dx,dy);
+
+  dx=delta.dx;
+  dy=delta.dy;
+
+  group.forEach(p=>{
+
+    p.x+=dx;
+    p.y+=dy;
+
+    const index=
+      positions.indexOf(p);
+
+    const el=
+      document.querySelector(
+        `.mapNode[data-index="${index}"]`
+      );
+
+    if(el){
+
+      el.style.left=p.x+'px';
+      el.style.top=p.y+'px';
+    }
+  });
 
   redrawLines();
 }
