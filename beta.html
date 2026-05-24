@@ -6,7 +6,7 @@
 <title>Newhouse Cartograph</title>
 
 <link rel="stylesheet"
-href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&family=SUSE:wght@400;500;700;800&display=swap" />
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&family=SUSE:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600;700;800&display=swap" />
 
 <style>
 *,*::before,*::after{
@@ -15,6 +15,7 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&family=S
 
 :root{
   --bg:#0b0f1a;
+  --canvasBg:#0b0f1a;
   --line:rgba(255,255,255,.6);
 
   --panel:#141a2b;
@@ -33,6 +34,12 @@ body{
   overflow:hidden;
 }
 
+button,
+input,
+textarea{
+  font-family:'SUSE',system-ui,sans-serif;
+}
+
 header{
   background:#0468fe;
   padding:14px 18px;
@@ -41,7 +48,7 @@ header{
 }
 
 /* =========================
-   QUICK SETUP BAR
+   QUICK SETUP
 ========================= */
 
 #topActions{
@@ -56,6 +63,7 @@ header{
 .quickSetupBtn{
   display:flex;
   align-items:center;
+  justify-content:center;
   gap:8px;
 
   background:#FFD84D;
@@ -67,23 +75,13 @@ header{
   padding:10px 14px;
 
   font-weight:800;
+
   cursor:pointer;
-
-  box-shadow:
-    0 2px 8px rgba(0,0,0,.18);
-}
-
-.quickSetupBtn .material-symbols-rounded{
-  font-size:20px;
 }
 
 .quickSetupBtn:hover{
   filter:brightness(1.03);
 }
-
-/* =========================
-   QUICK SETUP MODAL
-========================= */
 
 #quickSetupModal{
   position:fixed;
@@ -100,11 +98,11 @@ header{
 }
 
 .modalCard{
-  width:min(92vw,700px);
+  width:min(92vw,720px);
 
   background:#141a2b;
 
-  border:1px solid rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.18);
 
   border-radius:18px;
 
@@ -117,8 +115,8 @@ header{
   margin-bottom:10px;
 }
 
-.modalSubtitle{
-  opacity:.7;
+.modalDesc{
+  opacity:.72;
   font-size:14px;
   line-height:1.5;
   margin-bottom:14px;
@@ -126,7 +124,7 @@ header{
 
 #quickSetupInput{
   width:100%;
-  min-height:320px;
+  min-height:340px;
 
   resize:vertical;
 
@@ -140,10 +138,12 @@ header{
   background:#0b0f1a;
   color:white;
 
-  font-size:14px;
-  font-family:monospace;
+  border:1px solid rgba(255,255,255,.18);
 
-  border:1px solid rgba(255,255,255,.15);
+  font-size:14px;
+  line-height:1.5;
+
+  font-family:monospace;
 }
 
 #quickSetupInput::placeholder{
@@ -151,10 +151,9 @@ header{
 }
 
 .modalButtons{
-  margin-top:14px;
-
   display:flex;
   gap:10px;
+  margin-top:14px;
 }
 
 .modalBtn{
@@ -166,6 +165,7 @@ header{
   padding:12px;
 
   font-weight:800;
+
   cursor:pointer;
 
   display:flex;
@@ -233,7 +233,6 @@ header{
   outline:none;
   color:white;
   font-size:16px;
-  font-family:'SUSE',system-ui,sans-serif;
 }
 
 .nodeActions{
@@ -242,21 +241,34 @@ header{
   gap:6px;
 }
 
-.iconBtn{
+.iconBtn,
+.iconBtnOutline{
   width:34px;
   height:34px;
-
-  border:none;
   border-radius:8px;
-
-  background:#FFD84D;
-  color:#111;
-
   cursor:pointer;
-
   display:flex;
   align-items:center;
   justify-content:center;
+}
+
+.iconBtn{
+  border:none;
+  background:#FFD84D;
+  color:#111;
+}
+
+.iconBtnOutline{
+  border:2px solid #FFD84D;
+  background:transparent;
+  color:#FFD84D;
+}
+
+.collapseBtn{
+  background:none;
+  border:none;
+  color:white;
+  cursor:pointer;
 }
 
 .bottomButtons{
@@ -267,37 +279,133 @@ header{
 
 .bigBtn{
   flex:1;
-
   border:none;
   border-radius:14px;
-
   background:#FFD84D;
   color:#111;
-
   font-weight:800;
-
   padding:14px;
-
   cursor:pointer;
-
   display:flex;
   align-items:center;
   justify-content:center;
   gap:8px;
+}
 
-  font-family:'SUSE',system-ui,sans-serif;
+#mapView{
+  display:none;
+}
+
+#toolbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+.toolbarBtn{
+  background:var(--panel);
+  color:white;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:10px;
+  padding:10px 14px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+#canvas{
+  position:relative;
+  background:var(--canvasBg);
+  border:1px dashed rgba(255,255,255,.18);
+  border-radius:14px;
+  min-height:720px;
+  margin-top:14px;
+  overflow:hidden;
+  --mapFont:'SUSE',system-ui,sans-serif;
+}
+
+svg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}
+
+.mapNode{
+  position:absolute;
+  min-width:90px;
+  max-width:240px;
+
+  padding:10px 16px;
+
+  border-radius:999px;
+
+  background:var(--pill);
+  color:var(--pillText);
+
+  border:1px solid var(--pillBorder);
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+
+  user-select:none;
+  cursor:grab;
+
+  z-index:2;
+
+  font-family:var(--mapFont);
+}
+
+.mapNode.dragging{
+  cursor:grabbing;
+}
+
+.menuWrap{
+  position:relative;
+}
+
+.menu{
+  position:absolute;
+  top:110%;
+  right:0;
+
+  background:#141a2b;
+  border:1px solid rgba(255,255,255,.2);
+
+  border-radius:10px;
+  overflow:hidden;
+
+  display:none;
+
+  z-index:100;
+  min-width:180px;
+}
+
+.menu button{
+  width:100%;
+  background:#141a2b;
+  color:white;
+  border:none;
+  padding:10px 12px;
+  text-align:left;
+  cursor:pointer;
+}
+
+.menu button:hover{
+  background:rgba(255,255,255,.08);
+}
+
+#debug{
+  margin-top:10px;
+  font-size:12px;
+  opacity:.75;
 }
 
 @media(max-width:700px){
-
-  #topActions{
-    padding:0 16px;
-  }
-
-  .quickSetupBtn{
-    width:100%;
-    justify-content:center;
-  }
 
   .bottomButtons{
     flex-direction:column;
@@ -305,6 +413,14 @@ header{
 
   .modalButtons{
     flex-direction:column;
+  }
+
+  .quickSetupBtn{
+    width:100%;
+  }
+
+  #canvas{
+    min-height:640px;
   }
 }
 </style>
@@ -314,15 +430,82 @@ header{
 
 <header>🗺️ Newhouse Cartograph</header>
 
-<!-- QUICK SETUP BUTTON -->
 <div id="topActions">
-  <button class="quickSetupBtn" onclick="openQuickSetup()">
-    <span class="material-symbols-rounded">auto_awesome</span>
+  <button
+    class="quickSetupBtn"
+    onclick="openQuickSetup()"
+  >
+    <span class="material-symbols-rounded">
+      auto_awesome
+    </span>
+
     Quick Setup
   </button>
 </div>
 
+<div id="editor">
+  <div id="tree"></div>
+
+  <div class="bottomButtons">
+    <button class="bigBtn" onclick="generateMap('topdown')">
+      <span class="material-symbols-rounded">graph_4</span>
+      Top Down
+    </button>
+
+    <button class="bigBtn" onclick="generateMap('orbital')">
+      <span class="material-symbols-rounded">graph_5</span>
+      Orbital
+    </button>
+  </div>
+</div>
+
+<div id="mapView">
+
+  <div id="toolbar">
+
+    <button class="toolbarBtn" onclick="backToEditor()">
+      ← Back
+    </button>
+
+    <div class="menuWrap">
+      <button class="toolbarBtn" onclick="toggleMenu('themeMenu')">
+        <span class="material-symbols-rounded">palette</span>
+        <span id="themeLabel">Dark</span>
+      </button>
+
+      <div class="menu" id="themeMenu"></div>
+    </div>
+
+    <div class="menuWrap">
+      <button class="toolbarBtn" onclick="toggleMenu('bgMenu')">
+        <span class="material-symbols-rounded">wallpaper</span>
+        <span id="bgLabel">Dark</span>
+      </button>
+
+      <div class="menu" id="bgMenu"></div>
+    </div>
+
+    <div class="menuWrap">
+      <button class="toolbarBtn" onclick="toggleMenu('fontMenu')">
+        <span class="material-symbols-rounded">text_fields</span>
+        <span id="fontLabel">Default</span>
+      </button>
+
+      <div class="menu" id="fontMenu"></div>
+    </div>
+
+  </div>
+
+  <div id="canvas">
+    <svg id="lines"></svg>
+  </div>
+
+  <div id="debug"></div>
+
+</div>
+
 <!-- QUICK SETUP MODAL -->
+
 <div id="quickSetupModal">
 
   <div class="modalCard">
@@ -331,25 +514,25 @@ header{
       Quick Setup
     </div>
 
-    <div class="modalSubtitle">
-      Paste your numbered structure below.<br><br>
+    <div class="modalDesc">
+      Paste a numbered structure.<br><br>
 
-      Example format:<br>
+      Example:<br>
       0. Topic<br>
-      1. Math<br>
-      1.1. Algebra<br>
-      1.2. Geometry<br>
-      2. Science
+      1. Main Branch<br>
+      1.1. Child<br>
+      1.2. Another Child<br>
+      1.2.1. Nested Item
     </div>
 
     <textarea
       id="quickSetupInput"
       placeholder="0. Topic
-1. Subtopic
+1. Main Branch
 1.1. Child
 1.2. Another Child
 1.2.1. Nested Item
-2. Another Topic"
+2. Another Branch"
     ></textarea>
 
     <div class="modalButtons">
@@ -365,7 +548,10 @@ header{
         class="modalBtn modalBtnPrimary"
         onclick="importQuickSetup()"
       >
-        <span class="material-symbols-rounded">download</span>
+        <span class="material-symbols-rounded">
+          download
+        </span>
+
         Import
       </button>
 
@@ -375,27 +561,137 @@ header{
 
 </div>
 
-<div id="editor">
-
-  <div id="tree"></div>
-
-  <div class="bottomButtons">
-
-    <button class="bigBtn">
-      <span class="material-symbols-rounded">graph_4</span>
-      Top Down
-    </button>
-
-    <button class="bigBtn">
-      <span class="material-symbols-rounded">graph_5</span>
-      Orbital
-    </button>
-
-  </div>
-
-</div>
-
 <script>
+/* =========================
+   CONFIG
+========================= */
+
+const THEMES={
+  dark:{
+    type:'solid',
+    pill:'#141a2b',
+    text:'#ffffff',
+    border:'rgba(255,255,255,.18)'
+  },
+
+  light:{
+    type:'solid',
+    pill:'#ffffff',
+    text:'#000000',
+    border:'rgba(0,0,0,.25)'
+  },
+
+  newhouse:{
+    type:'solid',
+    pill:'#0468fe',
+    text:'#ffffff',
+    border:'rgba(255,255,255,.35)'
+  },
+
+  glimmer:{
+    type:'gradient',
+    start:'#0468fe',
+    end:'#000000',
+    text:'#ffffff',
+    border:'rgba(255,255,255,.25)'
+  },
+
+  pinkblue:{
+    type:'gradient',
+    start:'#f7b2d9',
+    end:'#b9e3ff',
+    text:'#000000',
+    border:'rgba(255,255,255,.25)'
+  },
+
+  purplegold:{
+    type:'gradient',
+    start:'#6a2fbf',
+    end:'#9b7a1f',
+    text:'#ffffff',
+    border:'rgba(255,255,255,.25)'
+  },
+
+  sunrise:{
+    type:'gradient',
+    start:'#ffd6a5',
+    end:'#ff8fab',
+    text:'#000000',
+    border:'rgba(255,255,255,.25)'
+  },
+
+  sunset:{
+    type:'gradient',
+    start:'#ff6a00',
+    end:'#2b1055',
+    text:'#ffffff',
+    border:'rgba(255,255,255,.25)'
+  },
+
+  pastel:{
+    type:'rainbow',
+    saturation:60,
+    lightness:85,
+    text:'#000000'
+  },
+
+  rainbow:{
+    type:'rainbow',
+    saturation:70,
+    lightness:40,
+    text:'#ffffff'
+  }
+};
+
+const BACKGROUNDS={
+  light:{
+    bg:'#ffffff',
+    line:'rgba(0,0,0,.6)'
+  },
+
+  sepia:{
+    bg:'#f4ecd8',
+    line:'rgba(60,40,20,.6)'
+  },
+
+  blueprint:{
+    bg:'#0b1e3d',
+    line:'rgba(200,220,255,.6)'
+  },
+
+  dark:{
+    bg:'#0b0f1a',
+    line:'rgba(255,255,255,.6)'
+  },
+
+  midnight:{
+    bg:'#000000',
+    line:'rgba(255,255,255,.8)'
+  }
+};
+
+const MAP_FONTS={
+  default:{
+    label:'Default',
+    stack:"'SUSE',system-ui,sans-serif"
+  },
+
+  inter:{
+    label:'Inter',
+    stack:"'Inter','SUSE',system-ui,sans-serif"
+  },
+
+  ibmplexsans:{
+    label:'IBM Plex Sans',
+    stack:"'IBM Plex Sans Thai','SUSE',system-ui,sans-serif"
+  },
+
+  googlesans:{
+    label:'Google Sans',
+    stack:"'Google Sans','Product Sans','Roboto','SUSE',system-ui,sans-serif"
+  }
+};
+
 /* =========================
    STATE
 ========================= */
@@ -406,8 +702,137 @@ let treeData={
   children:[]
 };
 
+let positions=[];
+
+let currentLayout='orbital';
+let currentTheme='dark';
+let currentBackground='dark';
+let currentMapFont='default';
+
+const PILL_W=140;
+const PILL_H=44;
+const MARGIN=26;
+
+let dragNode=null;
+let dragOffsetX=0;
+let dragOffsetY=0;
+
 /* =========================
-   TREE HELPERS
+   QUICK SETUP
+========================= */
+
+function openQuickSetup(){
+
+  document.getElementById(
+    'quickSetupModal'
+  ).style.display='flex';
+}
+
+function closeQuickSetup(){
+
+  document.getElementById(
+    'quickSetupModal'
+  ).style.display='none';
+}
+
+function importQuickSetup(){
+
+  const raw=
+    document.getElementById(
+      'quickSetupInput'
+    ).value;
+
+  const lines=
+    raw
+      .split('\n')
+      .map(l=>l.trim())
+      .filter(Boolean);
+
+  if(lines.length===0){
+
+    alert('No content found.');
+
+    return;
+  }
+
+  const map={};
+
+  let root=null;
+
+  try{
+
+    for(const line of lines){
+
+      const match=
+        line.match(/^([\d\.]+)\s+(.*)$/);
+
+      if(!match) continue;
+
+      const numbering=
+        match[1].replace(/\.$/,'');
+
+      const text=
+        match[2].trim();
+
+      const parts=
+        numbering
+          .split('.')
+          .filter(Boolean);
+
+      const node={
+        id:Date.now()+Math.random(),
+        text,
+        children:[]
+      };
+
+      map[numbering]=node;
+
+      if(numbering==='0'){
+
+        root=node;
+
+        continue;
+      }
+
+      const parentKey=
+        parts.length===1
+          ? '0'
+          : parts.slice(0,-1).join('.');
+
+      const parent=
+        map[parentKey];
+
+      if(parent){
+
+        parent.children.push(node);
+      }
+    }
+
+    if(!root){
+
+      alert(
+        'Missing root topic (0. Topic)'
+      );
+
+      return;
+    }
+
+    treeData=root;
+
+    renderTree();
+
+    closeQuickSetup();
+
+  }catch(err){
+
+    console.error(err);
+
+    alert('Import failed.');
+  }
+}
+
+/* =========================
+   TREE
 ========================= */
 
 function createNode(text='New node'){
@@ -419,46 +844,32 @@ function createNode(text='New node'){
 }
 
 function findNode(node,id){
-
-  if(node.id===id){
-    return node;
-  }
+  if(node.id===id) return node;
 
   for(const child of node.children){
-
     const found=findNode(child,id);
-
-    if(found){
-      return found;
-    }
+    if(found) return found;
   }
 
   return null;
 }
 
-function addChild(id){
-
-  const node=findNode(treeData,id);
-
-  if(!node) return;
-
-  node.children.push(
-    createNode()
-  );
-
-  renderTree();
-}
-
 function deleteNode(id,parent=treeData){
-
-  parent.children=
-    parent.children.filter(
-      c=>c.id!==id
-    );
+  parent.children=parent.children.filter(c=>c.id!==id);
 
   parent.children.forEach(c=>{
     deleteNode(id,c);
   });
+}
+
+function addChild(id){
+  const node=findNode(treeData,id);
+
+  if(!node) return;
+
+  node.children.push(createNode());
+
+  renderTree();
 }
 
 /* =========================
@@ -466,15 +877,11 @@ function deleteNode(id,parent=treeData){
 ========================= */
 
 function renderTree(){
-
-  const tree=
-    document.getElementById('tree');
+  const tree=document.getElementById('tree');
 
   tree.innerHTML='';
 
-  tree.appendChild(
-    renderNode(treeData,true)
-  );
+  tree.appendChild(renderNode(treeData,true));
 }
 
 function renderNode(node,isRoot=false){
@@ -526,8 +933,59 @@ function renderNode(node,isRoot=false){
     actions.appendChild(del);
   }
 
+  if(isRoot){
+
+    const wrap=document.createElement('div');
+    wrap.className='menuWrap';
+
+    const btn=document.createElement('button');
+
+    btn.className='iconBtnOutline';
+
+    btn.innerHTML=
+      '<span class="material-symbols-rounded">folder</span>';
+
+    btn.onclick=()=>{
+      toggleMenu('fileMenu');
+    };
+
+    const menu=document.createElement('div');
+
+    menu.className='menu';
+    menu.id='fileMenu';
+
+    menu.innerHTML=`
+      <button onclick="openCarto()">Open...</button>
+      <button onclick="saveCarto()">Save...</button>
+    `;
+
+    wrap.appendChild(btn);
+    wrap.appendChild(menu);
+
+    actions.appendChild(wrap);
+  }
+
+  const collapse=document.createElement('button');
+
+  collapse.className=
+    'collapseBtn material-symbols-rounded';
+
+  collapse.textContent='expand_more';
+
+  collapse.onclick=()=>{
+
+    const collapsed=
+      div.classList.toggle('collapsed');
+
+    collapse.textContent=
+      collapsed
+        ? 'chevron_right'
+        : 'expand_more';
+  };
+
   box.appendChild(input);
   box.appendChild(actions);
+  box.appendChild(collapse);
 
   div.appendChild(box);
 
@@ -535,7 +993,6 @@ function renderNode(node,isRoot=false){
   children.className='children';
 
   node.children.forEach(child=>{
-
     children.appendChild(
       renderNode(child,false)
     );
@@ -547,129 +1004,977 @@ function renderNode(node,isRoot=false){
 }
 
 /* =========================
-   QUICK SETUP MODAL
+   MENUS
 ========================= */
 
-function openQuickSetup(){
+function toggleMenu(id){
 
-  document.getElementById(
-    'quickSetupModal'
-  ).style.display='flex';
+  const menu=document.getElementById(id);
+
+  if(!menu) return;
+
+  const open=
+    menu.style.display==='block';
+
+  document.querySelectorAll('.menu')
+    .forEach(m=>{
+      m.style.display='none';
+    });
+
+  menu.style.display=
+    open ? 'none' : 'block';
 }
 
-function closeQuickSetup(){
+document.addEventListener('click',e=>{
 
-  document.getElementById(
-    'quickSetupModal'
-  ).style.display='none';
+  if(!e.target.closest('.menuWrap')){
+
+    document.querySelectorAll('.menu')
+      .forEach(m=>{
+        m.style.display='none';
+      });
+  }
+});
+
+/* =========================
+   FILES
+========================= */
+
+function saveCarto(){
+
+  const clean=(treeData.text || 'MAP')
+    .replace(/[^A-Z0-9]/gi,'')
+    .toUpperCase()
+    .slice(0,8);
+
+  const d=new Date();
+
+  const date=
+    d.getFullYear()+
+    String(d.getMonth()+1).padStart(2,'0')+
+    String(d.getDate()).padStart(2,'0');
+
+  const filename=
+    `${date}_${clean || 'MAP'}.carto`;
+
+  const blob=new Blob(
+    [JSON.stringify(treeData,null,2)],
+    {type:'application/json'}
+  );
+
+  const a=document.createElement('a');
+
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+
+  a.click();
+}
+
+function openCarto(){
+
+  const input=document.createElement('input');
+
+  input.type='file';
+  input.accept='.carto';
+
+  input.onchange=e=>{
+
+    const file=e.target.files[0];
+
+    if(!file) return;
+
+    const reader=new FileReader();
+
+    reader.onload=()=>{
+
+      try{
+
+        const parsed=
+          JSON.parse(reader.result);
+
+        if(!parsed || typeof parsed!=='object'){
+          throw new Error();
+        }
+
+        treeData=parsed;
+
+        renderTree();
+
+      }catch(err){
+
+        alert('Invalid .carto file');
+      }
+    };
+
+    reader.readAsText(file);
+  };
+
+  input.click();
 }
 
 /* =========================
-   QUICK SETUP IMPORT
+   VIEW
 ========================= */
 
-function importQuickSetup(){
+function generateMap(mode){
 
-  const raw=
-    document.getElementById(
-      'quickSetupInput'
-    ).value;
+  currentLayout=mode;
 
-  const lines=
-    raw
-      .split('\n')
-      .map(l=>l.trim())
-      .filter(Boolean);
+  document.getElementById('editor')
+    .style.display='none';
 
-  if(lines.length===0){
-    alert('No content found.');
+  document.getElementById('mapView')
+    .style.display='block';
+
+  document.getElementById('topActions')
+    .style.display='none';
+
+  drawMap();
+}
+
+function backToEditor(){
+
+  document.getElementById('mapView')
+    .style.display='none';
+
+  document.getElementById('editor')
+    .style.display='flex';
+
+  document.getElementById('topActions')
+    .style.display='flex';
+}
+
+/* =========================
+   LAYOUT
+========================= */
+
+function getCanvasSize(){
+
+  const canvas=
+    document.getElementById('canvas');
+
+  return {
+    w:canvas.clientWidth || 1000,
+    h:canvas.clientHeight || 720
+  };
+}
+
+function clamp(x,y){
+
+  const {w,h}=getCanvasSize();
+
+  return {
+    x:Math.max(
+      MARGIN,
+      Math.min(w-PILL_W-MARGIN,x)
+    ),
+
+    y:Math.max(
+      MARGIN,
+      Math.min(h-PILL_H-MARGIN,y)
+    )
+  };
+}
+
+function pushPosition(node,x,y,parent=null,depth=0){
+
+  const p=clamp(
+    x-PILL_W/2,
+    y-PILL_H/2
+  );
+
+  positions.push({
+    node,
+    x:p.x,
+    y:p.y,
+    parent,
+    depth
+  });
+
+  return positions[positions.length-1];
+}
+
+/* ===== ORBITAL ===== */
+
+function layoutOrbitalRoot(){
+
+  const {w,h}=getCanvasSize();
+
+  const root=
+    pushPosition(
+      treeData,
+      w/2,
+      h/2,
+      null,
+      0
+    );
+
+  const children=treeData.children;
+
+  if(children.length===0) return;
+
+  const step=
+    (Math.PI*2)/children.length;
+
+  children.forEach((child,index)=>{
+
+    const angle=
+      -Math.PI/2 + step*index;
+
+    orbitalBranch(
+      child,
+      root,
+      angle,
+      220,
+      1
+    );
+  });
+}
+
+function orbitalBranch(
+  node,
+  parentPos,
+  angle,
+  radius,
+  depth
+){
+
+  const variance=
+    (Math.random()-.5)*0.28;
+
+  const a=angle+variance;
+
+  const cx=
+    parentPos.x+PILL_W/2+
+    Math.cos(a)*radius;
+
+  const cy=
+    parentPos.y+PILL_H/2+
+    Math.sin(a)*radius;
+
+  const current=
+    pushPosition(
+      node,
+      cx,
+      cy,
+      parentPos,
+      depth
+    );
+
+  avoidOverlap(current);
+
+  const children=node.children;
+
+  if(children.length===0) return;
+
+  const spread=
+    Math.max(
+      0.5,
+      1.7-(depth*0.12)
+    );
+
+  children.forEach((child,index)=>{
+
+    const offset=
+      children.length===1
+        ? 0
+        : ((index/(children.length-1))-.5)
+          * spread;
+
+    orbitalBranch(
+      child,
+      current,
+      a+offset,
+      Math.max(145,210-(depth*12)),
+      depth+1
+    );
+  });
+}
+
+/* ===== TOP DOWN ===== */
+
+function layoutTopDown(){
+
+  const {w}=getCanvasSize();
+
+  topDownBranch(
+    treeData,
+    w/2,
+    90,
+    300,
+    null,
+    0
+  );
+}
+
+function topDownBranch(
+  node,
+  x,
+  y,
+  spread,
+  parent,
+  depth
+){
+
+  const current=
+    pushPosition(
+      node,
+      x,
+      y,
+      parent,
+      depth
+    );
+
+  avoidOverlap(current);
+
+  const children=node.children;
+
+  if(children.length===0) return;
+
+  const nextSpread=
+    Math.max(110,spread*0.72);
+
+  children.forEach((child,index)=>{
+
+    const nx=
+      x
+      -(nextSpread*(children.length-1)/2)
+      +(index*nextSpread);
+
+    const ny=
+      y+118;
+
+    topDownBranch(
+      child,
+      nx,
+      ny,
+      nextSpread,
+      current,
+      depth+1
+    );
+  });
+}
+
+/* =========================
+   OVERLAP
+========================= */
+
+function intersects(a,b){
+
+  return !(
+    a.x+PILL_W < b.x ||
+    a.x > b.x+PILL_W ||
+    a.y+PILL_H < b.y ||
+    a.y > b.y+PILL_H
+  );
+}
+
+function avoidOverlap(target){
+
+  let attempts=0;
+
+  while(attempts<40){
+
+    let hit=false;
+
+    for(const other of positions){
+
+      if(other===target) continue;
+
+      if(intersects(target,other)){
+
+        target.y+=58;
+
+        hit=true;
+      }
+    }
+
+    if(!hit) break;
+
+    attempts++;
+  }
+
+  const clamped=
+    clamp(target.x,target.y);
+
+  target.x=clamped.x;
+  target.y=clamped.y;
+}
+
+/* =========================
+   DRAW
+========================= */
+
+function drawMap(){
+
+  positions=[];
+
+  const canvas=
+    document.getElementById('canvas');
+
+  canvas.innerHTML=
+    '<svg id="lines"></svg>';
+
+  if(currentLayout==='topdown'){
+    layoutTopDown();
+  }else{
+    layoutOrbitalRoot();
+  }
+
+  positions.forEach((p,index)=>{
+
+    const el=document.createElement('div');
+
+    el.className='mapNode';
+
+    el.textContent=
+      p.node.text || 'Untitled';
+
+    el.style.left=p.x+'px';
+    el.style.top=p.y+'px';
+
+    el.dataset.index=index;
+
+    attachDragging(el,p);
+
+    canvas.appendChild(el);
+  });
+
+  applyBackground();
+  applyTheme();
+  applyMapFont();
+
+  redrawLines();
+
+  updateDebug();
+}
+
+/* =========================
+   DRAGGING
+========================= */
+
+function attachDragging(el,pos){
+
+  function start(clientX,clientY){
+
+    dragNode={el,pos};
+
+    dragOffsetX=
+      clientX-pos.x;
+
+    dragOffsetY=
+      clientY-pos.y;
+
+    el.classList.add('dragging');
+  }
+
+  el.addEventListener('mousedown',e=>{
+    start(e.clientX,e.clientY);
+  });
+
+  el.addEventListener('touchstart',e=>{
+
+    const t=e.touches[0];
+
+    start(t.clientX,t.clientY);
+
+  },{passive:true});
+}
+
+document.addEventListener('mousemove',moveDrag);
+document.addEventListener('touchmove',touchMove,{passive:false});
+
+function moveDrag(e){
+
+  if(!dragNode) return;
+
+  updateDrag(e.clientX,e.clientY);
+}
+
+function touchMove(e){
+
+  if(!dragNode) return;
+
+  e.preventDefault();
+
+  const t=e.touches[0];
+
+  updateDrag(t.clientX,t.clientY);
+}
+
+function updateDrag(clientX,clientY){
+
+  const pos=dragNode.pos;
+
+  const next=clamp(
+    clientX-dragOffsetX,
+    clientY-dragOffsetY
+  );
+
+  pos.x=next.x;
+  pos.y=next.y;
+
+  dragNode.el.style.left=pos.x+'px';
+  dragNode.el.style.top=pos.y+'px';
+
+  redrawLines();
+}
+
+document.addEventListener('mouseup',endDrag);
+document.addEventListener('touchend',endDrag);
+
+function endDrag(){
+
+  if(!dragNode) return;
+
+  dragNode.el.classList.remove('dragging');
+
+  dragNode=null;
+}
+
+/* =========================
+   LINES
+========================= */
+
+function redrawLines(){
+
+  const svg=
+    document.getElementById('lines');
+
+  if(!svg) return;
+
+  svg.innerHTML='';
+
+  const canvasRect=
+    document.getElementById('canvas')
+      .getBoundingClientRect();
+
+  const nodeEls=
+    [...document.querySelectorAll('.mapNode')];
+
+  positions.forEach((p,index)=>{
+
+    if(!p.parent) return;
+
+    const parentIndex=
+      positions.indexOf(p.parent);
+
+    if(parentIndex<0) return;
+
+    const a=
+      nodeEls[parentIndex]
+        .getBoundingClientRect();
+
+    const b=
+      nodeEls[index]
+        .getBoundingClientRect();
+
+    const line=
+      document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'line'
+      );
+
+    line.setAttribute(
+      'x1',
+      a.left+a.width/2-canvasRect.left
+    );
+
+    line.setAttribute(
+      'y1',
+      a.top+a.height/2-canvasRect.top
+    );
+
+    line.setAttribute(
+      'x2',
+      b.left+b.width/2-canvasRect.left
+    );
+
+    line.setAttribute(
+      'y2',
+      b.top+b.height/2-canvasRect.top
+    );
+
+    line.setAttribute(
+      'stroke',
+      'var(--line)'
+    );
+
+    line.setAttribute(
+      'stroke-width',
+      '2'
+    );
+
+    svg.appendChild(line);
+  });
+}
+
+/* =========================
+   THEMES
+========================= */
+
+function applyTheme(){
+
+  const theme=
+    THEMES[currentTheme];
+
+  const nodes=
+    [...document.querySelectorAll('.mapNode')];
+
+  if(theme.type==='solid'){
+
+    nodes.forEach(el=>{
+
+      el.style.background=
+        theme.pill;
+
+      el.style.color=
+        theme.text;
+
+      el.style.borderColor=
+        theme.border;
+    });
+
     return;
   }
 
-  const map={};
+  if(theme.type==='gradient'){
 
-  let root=null;
+    const roots=[
+      positions[0],
+      ...positions.filter(
+        p=>p.parent===positions[0]
+      )
+    ];
 
-  try{
+    roots.forEach((root,index)=>{
 
-    for(const line of lines){
+      const t=
+        roots.length<=1
+          ? 0
+          : index/(roots.length-1);
 
-      const match=
-        line.match(/^([\d\.]+)\s+(.*)$/);
+      const bg=
+        mixColor(
+          theme.start,
+          theme.end,
+          t
+        );
 
-      if(!match){
-        continue;
-      }
+      applyBranchColor(
+        root,
+        bg,
+        theme.text,
+        theme.border
+      );
+    });
 
-      const numbering=
-        match[1]
-          .replace(/\.$/,'');
-
-      const text=
-        match[2].trim();
-
-      const parts=
-        numbering
-          .split('.')
-          .filter(Boolean);
-
-      const node={
-        id:Date.now()+Math.random(),
-        text,
-        children:[]
-      };
-
-      map[numbering]=node;
-
-      /* ROOT */
-
-      if(numbering==='0'){
-
-        root=node;
-
-        continue;
-      }
-
-      /* PARENT */
-
-      const parentKey=
-        parts.length===1
-          ? '0'
-          : parts.slice(0,-1).join('.');
-
-      const parent=
-        map[parentKey];
-
-      if(parent){
-
-        parent.children.push(node);
-      }
-    }
-
-    if(!root){
-      alert('Missing root topic (0. Topic)');
-      return;
-    }
-
-    treeData=root;
-
-    renderTree();
-
-    closeQuickSetup();
-
-  }catch(err){
-
-    console.error(err);
-
-    alert('Import failed.');
+    return;
   }
+
+  if(theme.type==='rainbow'){
+
+    const roots=[
+      positions[0],
+      ...positions.filter(
+        p=>p.parent===positions[0]
+      )
+    ];
+
+    roots.forEach((root,index)=>{
+
+      const hue=
+        (index/Math.max(1,roots.length))
+        *360;
+
+      const bg=
+        `hsl(
+          ${hue},
+          ${theme.saturation}%,
+          ${theme.lightness}%
+        )`;
+
+      applyBranchColor(
+        root,
+        bg,
+        theme.text,
+        bg
+      );
+    });
+  }
+}
+
+function applyBranchColor(
+  root,
+  bg,
+  text,
+  border
+){
+
+  const nodeEls=
+    [...document.querySelectorAll('.mapNode')];
+
+  positions.forEach((p,index)=>{
+
+    if(
+      p===root ||
+      isDescendant(p,root)
+    ){
+
+      nodeEls[index].style.background=bg;
+      nodeEls[index].style.color=text;
+
+      nodeEls[index].style.border=
+        `1px solid ${border}`;
+    }
+  });
+}
+
+function isDescendant(node,root){
+
+  let p=node.parent;
+
+  while(p){
+
+    if(p===root) return true;
+
+    p=p.parent;
+  }
+
+  return false;
+}
+
+function mixColor(a,b,t){
+
+  const ar=parseInt(a.slice(1,3),16);
+  const ag=parseInt(a.slice(3,5),16);
+  const ab=parseInt(a.slice(5,7),16);
+
+  const br=parseInt(b.slice(1,3),16);
+  const bg=parseInt(b.slice(3,5),16);
+  const bb=parseInt(b.slice(5,7),16);
+
+  const r=Math.round(ar+(br-ar)*t);
+  const g=Math.round(ag+(bg-ag)*t);
+  const bl=Math.round(ab+(bb-ab)*t);
+
+  return `rgb(${r},${g},${bl})`;
+}
+
+/* =========================
+   BACKGROUNDS
+========================= */
+
+function applyBackground(){
+
+  const bg=
+    BACKGROUNDS[currentBackground];
+
+  document.documentElement
+    .style.setProperty('--canvasBg',bg.bg);
+
+  document.documentElement
+    .style.setProperty('--line',bg.line);
+}
+
+/* =========================
+   MAP FONT
+========================= */
+
+function applyMapFont(){
+
+  const font=
+    MAP_FONTS[currentMapFont];
+
+  document.getElementById('canvas')
+    .style.setProperty('--mapFont',font.stack);
+}
+
+/* =========================
+   MENUS INIT
+========================= */
+
+function buildMenus(){
+
+  const themeMenu=
+    document.getElementById('themeMenu');
+
+  const bgMenu=
+    document.getElementById('bgMenu');
+
+  const fontMenu=
+    document.getElementById('fontMenu');
+
+  themeMenu.innerHTML='';
+  bgMenu.innerHTML='';
+  fontMenu.innerHTML='';
+
+  Object.keys(THEMES).forEach(key=>{
+
+    const btn=document.createElement('button');
+
+    btn.textContent=
+      capitalize(key);
+
+    btn.onclick=()=>{
+
+      currentTheme=key;
+
+      document.getElementById('themeLabel')
+        .textContent=capitalize(key);
+
+      applyTheme();
+
+      closeMenus();
+    };
+
+    themeMenu.appendChild(btn);
+  });
+
+  Object.keys(BACKGROUNDS).forEach(key=>{
+
+    const btn=document.createElement('button');
+
+    btn.textContent=
+      capitalize(key);
+
+    btn.onclick=()=>{
+
+      currentBackground=key;
+
+      document.getElementById('bgLabel')
+        .textContent=capitalize(key);
+
+      applyBackground();
+
+      redrawLines();
+
+      closeMenus();
+    };
+
+    bgMenu.appendChild(btn);
+  });
+
+  Object.keys(MAP_FONTS).forEach(key=>{
+
+    const btn=document.createElement('button');
+
+    btn.textContent=
+      MAP_FONTS[key].label;
+
+    btn.onclick=()=>{
+
+      currentMapFont=key;
+
+      document.getElementById('fontLabel')
+        .textContent=MAP_FONTS[key].label;
+
+      applyMapFont();
+
+      redrawLines();
+
+      closeMenus();
+    };
+
+    fontMenu.appendChild(btn);
+  });
+}
+
+function closeMenus(){
+
+  document.querySelectorAll('.menu')
+    .forEach(m=>{
+      m.style.display='none';
+    });
+}
+
+function capitalize(str){
+
+  return str.charAt(0).toUpperCase()
+    + str.slice(1);
+}
+
+/* =========================
+   DEBUG
+========================= */
+
+function updateDebug(){
+
+  document.getElementById('debug')
+    .textContent=
+      `Mode: ${currentLayout}
+       • Theme: ${capitalize(currentTheme)}
+       • Background: ${capitalize(currentBackground)}
+       • Font: ${MAP_FONTS[currentMapFont].label}
+       • Nodes: ${positions.length}`;
+}
+
+/* =========================
+   TESTS
+========================= */
+
+function runTests(){
+
+  console.assert(
+    typeof generateMap==='function',
+    'generateMap exists'
+  );
+
+  console.assert(
+    typeof applyTheme==='function',
+    'applyTheme exists'
+  );
+
+  console.assert(
+    typeof redrawLines==='function',
+    'redrawLines exists'
+  );
+
+  console.assert(
+    typeof importQuickSetup==='function',
+    'importQuickSetup exists'
+  );
+
+  console.assert(
+    typeof applyMapFont==='function',
+    'applyMapFont exists'
+  );
+
+  console.assert(
+    Object.keys(THEMES).length===10,
+    'all themes exist'
+  );
+
+  console.assert(
+    Object.keys(BACKGROUNDS).length===5,
+    'all backgrounds exist'
+  );
+
+  console.assert(
+    Object.keys(MAP_FONTS).length===4,
+    'all map fonts exist'
+  );
 }
 
 /* =========================
    INIT
 ========================= */
 
+buildMenus();
+
 renderTree();
+
+runTests();
+
+window.addEventListener('resize',()=>{
+
+  if(
+    document.getElementById('mapView')
+      .style.display==='block'
+  ){
+    drawMap();
+  }
+});
 </script>
 
 </body>
